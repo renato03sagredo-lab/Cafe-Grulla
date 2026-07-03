@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Work+Sans:wght@400;450;500;600&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box}
+    body{margin:0}
+    input,button{font-family:inherit}
+    input[type=number]{-moz-appearance:textfield}
+    input[type=number]::-webkit-inner-spin-button{display:none}
+    ::placeholder{color:var(--muted,#8A7A67);opacity:1}
+    ::-webkit-scrollbar{width:8px;height:8px}
+    ::-webkit-scrollbar-thumb{background:var(--border,#E0D3BF);border-radius:8px}
+    @keyframes toastUp{from{opacity:0;transform:translate(-50%,14px)}to{opacity:1;transform:translate(-50%,0)}}
+    @keyframes splashIn{0%{opacity:0;transform:scale(.82) translateY(14px)}55%{opacity:1}100%{opacity:1;transform:scale(1) translateY(0)}}
+    @keyframes splashSub{0%,40%{opacity:0;letter-spacing:.5em}100%{opacity:1;letter-spacing:.34em}}
+    @keyframes splashOut{to{opacity:0;visibility:hidden}}
+  </style>
+  <meta name="theme-color" content="#B5541F">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Café Grulla">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function () {
+        navigator.serviceWorker.register('sw.js').catch(function (e) { console.warn('SW no registrado', e); });
+      });
+    }
+  </script>
+  <template id="__bundler_thumbnail">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+      <rect width="100" height="100" fill="#F3EADD"/>
+      <g fill="none" stroke="#33271D" stroke-width="2.4" stroke-linejoin="round">
+        <path d="M50 40 L38 30 L50 62 L62 30 Z"/>
+        <path d="M50 40 L30 46 L38 30"/>
+        <path d="M50 40 L70 46 L62 30"/>
+      </g>
+    </svg>
+  </template>
+</helmet>
+<div style="{{ rootStyle }}">
+
+  <sc-if value="{{ showSplash }}" hint-placeholder-val="{{ true }}">
+    <div style="{{ splashStyle }}">
+      <img src="icons/logo.png" alt="Café Grulla" style="width:min(64vw,270px);height:auto;animation:splashIn 1s cubic-bezier(.2,.8,.2,1) both">
+      <div style="font-family:'Work Sans',sans-serif;font-size:12px;text-transform:uppercase;color:var(--muted,#8A7A67);margin-top:26px;animation:splashSub 1.4s ease both">Grano de especialidad</div>
+    </div>
+  </sc-if>
+
+  <div style="max-width:900px;margin:0 auto;padding:26px 22px 90px">
+
+    <header style="display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:26px;flex-wrap:wrap">
+      <div style="display:flex;align-items:center;gap:14px">
+        <img src="icons/logo.png" alt="" style="width:52px;height:52px;object-fit:contain;flex-shrink:0">
+        <div>
+          <div style="font-family:Newsreader,serif;font-size:24px;line-height:1.05;color:var(--text,#33271D)">Café Grulla</div>
+          <div style="font-size:12.5px;letter-spacing:0.13em;text-transform:uppercase;color:var(--muted,#8A7A67);margin-top:3px">Grano de especialidad</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:9px;align-items:center">
+        <sc-for list="{{ themeSwatches }}" as="s" hint-placeholder-count="3">
+          <button onClick="{{ s.onClick }}" title="{{ s.label }}" style="{{ s.style }}"></button>
+        </sc-for>
+      </div>
+    </header>
+
+    <nav style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:24px">
+      <sc-for list="{{ navTabs }}" as="t" hint-placeholder-count="5">
+        <button onClick="{{ t.onClick }}" style="{{ t.style }}" style-hover="opacity:0.82">{{ t.label }}</button>
+      </sc-for>
+    </nav>
+
+    <!-- NUEVA VENTA -->
+    <sc-if value="{{ isNueva }}" hint-placeholder-val="{{ true }}">
+      <section style="max-width:580px;margin:0 auto;background:var(--surface,#FBF6EE);border:1px solid var(--border,#E0D3BF);border-radius:22px;padding:30px 30px 34px;box-shadow:0 1px 3px rgba(0,0,0,0.04)">
+        <h2 style="font-family:Newsreader,serif;font-weight:500;font-size:26px;margin:0 0 26px;color:var(--text,#33271D)">Nueva venta</h2>
+
+        <!-- Cliente -->
+        <div style="position:relative;margin-bottom:22px">
+          <label style="display:block;font-size:11.5px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted,#8A7A67);margin-bottom:8px;font-weight:600">Cliente</label>
+          <button onClick="{{ toggleCliente }}" style="display:flex;align-items:center;justify-content:space-between;width:100%;padding:14px 16px;border:1px solid var(--border,#E0D3BF);border-radius:13px;background:var(--surface2,#F3EADD);font-size:16px;cursor:pointer;text-align:left">
+            <span style="{{ clienteLabelStyle }}">{{ clienteLabel }}</span>
+            <span style="color:var(--muted,#8A7A67);font-size:12px;margin-left:10px">▼</span>
+          </button>
+          <sc-if value="{{ isClienteOpen }}">
+            <div style="position:absolute;top:calc(100% + 6px);left:0;right:0;background:var(--surface,#FBF6EE);border:1px solid var(--border,#E0D3BF);border-radius:14px;box-shadow:0 14px 34px rgba(40,25,10,0.16);z-index:40;overflow:hidden;display:flex;flex-direction:column;max-height:290px">
+              <div style="padding:10px;border-bottom:1px solid var(--border,#E0D3BF)">
+                <input value="{{ clienteSearch }}" onChange="{{ onClienteSearch }}" placeholder="Buscar por nombre…" autoFocus="{{ true }}" style="width:100%;padding:10px 12px;border:1px solid var(--border,#E0D3BF);border-radius:9px;background:var(--surface2,#F3EADD);font-size:15px;color:var(--text,#33271D);outline:none">
+              </div>
+              <div style="overflow-y:auto">
+                <sc-for list="{{ filteredClientes }}" as="c" hint-placeholder-count="4">
+                  <button onClick="{{ c.onSelect }}" style="display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:100%;padding:11px 16px;border:none;background:transparent;cursor:pointer;text-align:left" style-hover="background:var(--surface2,#F3EADD)">
+                    <span style="font-size:15px;color:var(--text,#33271D)">{{ c.nombre }}</span>
+                    <span style="font-size:12.5px;color:var(--muted,#8A7A67)">{{ c.telefono }}</span>
+                  </button>
+                </sc-for>
+                <sc-if value="{{ noClientes }}">
+                  <div style="padding:16px;font-size:14px;color:var(--muted,#8A7A67);text-align:center">Sin resultados</div>
+                </sc-if>
+              </div>
+            </div>
+          </sc-if>
+        </div>
+
+        <!-- ¿Cuántos cafés? -->
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:20px;padding:14px 16px;border:1px solid var(--border,#E0D3BF);border-radius:13px;background:var(--surface2,#F3EADD)">
+          <span style="font-size:14.5px;color:var(--text,#33271D);font-weight:500">¿Cuántos cafés lleva?</span>
+          <div style="display:flex;align-items:center;gap:14px">
+            <button onClick="{{ decCount }}" style="width:36px;height:36px;border-radius:50%;border:1px solid var(--border,#E0D3BF);background:var(--surface,#FBF6EE);color:var(--text,#33271D);font-size:20px;cursor:pointer;line-height:1">−</button>
+            <span style="font-family:Newsreader,serif;font-size:22px;min-width:20px;text-align:center;color:var(--text,#33271D)">{{ itemCount }}</span>
+            <button onClick="{{ incCount }}" style="width:36px;height:36px;border-radius:50%;border:1px solid var(--border,#E0D3BF);background:var(--surface,#FBF6EE);color:var(--text,#33271D);font-size:20px;cursor:pointer;line-height:1">+</button>
+          </div>
+        </div>
+
+        <!-- Items -->
+        <sc-for list="{{ items }}" as="it" hint-placeholder-count="1">
+          <div style="border:1px solid var(--border,#E0D3BF);border-radius:16px;padding:18px;margin-bottom:14px;background:var(--surface2,#F3EADD)">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+              <span style="font-family:Newsreader,serif;font-size:18px;color:var(--text,#33271D)">{{ it.title }}</span>
+              <sc-if value="{{ it.canRemove }}">
+                <button onClick="{{ it.onRemove }}" style="border:none;background:transparent;color:var(--muted,#8A7A67);font-size:13px;cursor:pointer" style-hover="color:var(--accent,#B5541F)">Quitar</button>
+              </sc-if>
+            </div>
+
+            <!-- café dropdown -->
+            <div style="position:relative;margin-bottom:14px">
+              <button onClick="{{ it.toggleCafe }}" style="display:flex;align-items:center;justify-content:space-between;width:100%;padding:13px 15px;border:1px solid var(--border,#E0D3BF);border-radius:12px;background:var(--surface,#FBF6EE);font-size:15.5px;cursor:pointer;text-align:left">
+                <span style="{{ it.cafeLabelStyle }}">{{ it.cafeLabel }}</span>
+                <span style="color:var(--muted,#8A7A67);font-size:12px;margin-left:10px">▼</span>
+              </button>
+              <sc-if value="{{ it.isCafeOpen }}">
+                <div style="position:absolute;top:calc(100% + 6px);left:0;right:0;background:var(--surface,#FBF6EE);border:1px solid var(--border,#E0D3BF);border-radius:14px;box-shadow:0 14px 34px rgba(40,25,10,0.16);z-index:40;overflow:hidden;max-height:280px;overflow-y:auto">
+                  <sc-for list="{{ it.cafeOptions }}" as="c" hint-placeholder-count="6">
+                    <button onClick="{{ c.onSelect }}" style="display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;padding:12px 16px;border:none;background:transparent;cursor:pointer;text-align:left" style-hover="background:var(--surface2,#F3EADD)">
+                      <span style="display:flex;flex-direction:column;gap:2px">
+                        <span style="font-size:15px;color:var(--text,#33271D)">{{ c.origen }}</span>
+                        <span style="font-size:12.5px;color:var(--muted,#8A7A67)">{{ c.perfil }}</span>
+                      </span>
+                      <span style="font-size:13.5px;color:var(--accent,#B5541F);font-weight:600;white-space:nowrap">{{ c.precioLabel }}</span>
+                    </button>
+                  </sc-for>
+                </div>
+              </sc-if>
+            </div>
+
+            <!-- cantidad -->
+            <label style="display:block;font-size:11px;letter-spacing:0.13em;text-transform:uppercase;color:var(--muted,#8A7A67);margin-bottom:7px;font-weight:600">Cantidad</label>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px">
+              <sc-for list="{{ it.cantidadQuick }}" as="q" hint-placeholder-count="3">
+                <button onClick="{{ q.onClick }}" style="{{ q.style }}">{{ q.label }}</button>
+              </sc-for>
+              <div style="display:flex;align-items:center;gap:6px;border:1px solid var(--border,#E0D3BF);border-radius:12px;padding:0 12px 0 4px;background:var(--surface,#FBF6EE)">
+                <input type="number" value="{{ it.cantidad }}" onChange="{{ it.onCantidad }}" style="width:64px;padding:10px 8px;border:none;background:transparent;font-size:15px;color:var(--text,#33271D);text-align:right;outline:none">
+                <span style="font-size:14px;color:var(--muted,#8A7A67)">g</span>
+              </div>
+            </div>
+
+            <!-- molienda -->
+            <label style="display:block;font-size:11px;letter-spacing:0.13em;text-transform:uppercase;color:var(--muted,#8A7A67);margin-bottom:7px;font-weight:600">Molienda</label>
+            <div style="position:relative;margin-bottom:14px">
+              <button onClick="{{ it.toggleMolienda }}" style="display:flex;align-items:center;justify-content:space-between;width:100%;padding:13px 15px;border:1px solid var(--border,#E0D3BF);border-radius:12px;background:var(--surface,#FBF6EE);font-size:15.5px;cursor:pointer;text-align:left">
+                <span style="color:var(--text,#33271D)">{{ it.molienda }}</span>
+                <span style="color:var(--muted,#8A7A67);font-size:12px;margin-left:10px">▼</span>
+              </button>
+              <sc-if value="{{ it.isMoliendaOpen }}">
+                <div style="position:absolute;top:calc(100% + 6px);left:0;right:0;background:var(--surface,#FBF6EE);border:1px solid var(--border,#E0D3BF);border-radius:14px;box-shadow:0 14px 34px rgba(40,25,10,0.16);z-index:40;overflow:hidden">
+                  <sc-for list="{{ it.moliendaOptions }}" as="m" hint-placeholder-count="5">
+                    <button onClick="{{ m.onSelect }}" style="{{ m.style }}" style-hover="background:var(--surface2,#F3EADD)">{{ m.label }}</button>
+                  </sc-for>
+                </div>
+              </sc-if>
+            </div>
+
+            <!-- precio editable + subtotal -->
+            <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap">
+              <div>
+                <label style="display:block;font-size:11px;letter-spacing:0.13em;text-transform:uppercase;color:var(--muted,#8A7A67);margin-bottom:7px;font-weight:600">Precio</label>
+                <div style="display:flex;align-items:center;gap:6px;border:1px solid var(--border,#E0D3BF);border-radius:12px;padding:0 10px 0 12px;background:var(--surface,#FBF6EE)">
+                  <span style="font-size:15px;color:var(--muted,#8A7A67)">$</span>
+                  <input type="number" value="{{ it.precio }}" onChange="{{ it.onPrecio }}" placeholder="0" style="width:82px;padding:10px 6px;border:none;background:transparent;font-size:15px;color:var(--text,#33271D);text-align:right;outline:none">
+                  <span style="font-size:12.5px;color:var(--muted,#8A7A67);white-space:nowrap">/250g</span>
+                </div>
+              </div>
+              <div style="text-align:right">
+                <div style="font-size:11px;letter-spacing:0.13em;text-transform:uppercase;color:var(--muted,#8A7A67);font-weight:600;margin-bottom:4px">Subtotal</div>
+                <div style="font-family:Newsreader,serif;font-size:20px;color:var(--text,#33271D)">{{ it.subtotalLabel }}</div>
+              </div>
+            </div>
+          </div>
+        </sc-for>
+
+        <!-- Entrega -->
+        <div style="margin:20px 0 20px">
+          <label style="display:block;font-size:11.5px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted,#8A7A67);margin-bottom:8px;font-weight:600">Entrega</label>
+          <div style="display:flex;gap:8px">
+            <sc-for list="{{ entregaOptions }}" as="o" hint-placeholder-count="2">
+              <button onClick="{{ o.onClick }}" style="{{ o.style }}">{{ o.label }}</button>
+            </sc-for>
+          </div>
+        </div>
+
+        <!-- Pago -->
+        <div style="margin-bottom:8px">
+          <label style="display:block;font-size:11.5px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted,#8A7A67);margin-bottom:8px;font-weight:600">Pago</label>
+          <div style="display:flex;gap:8px">
+            <sc-for list="{{ pagoOptions }}" as="o" hint-placeholder-count="2">
+              <button onClick="{{ o.onClick }}" style="{{ o.style }}">{{ o.label }}</button>
+            </sc-for>
+          </div>
+        </div>
+
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin:26px 0 20px;padding-top:20px;border-top:1px solid var(--border,#E0D3BF)">
+          <span style="font-size:12px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted,#8A7A67);font-weight:600">Total</span>
+          <span style="font-family:Newsreader,serif;font-size:36px;color:var(--text,#33271D)">{{ totalLabel }}</span>
+        </div>
+
+        <button onClick="{{ saveSale }}" disabled="{{ saveDisabled }}" style="{{ saveBtnStyle }}" style-hover="filter:brightness(1.06)">Registrar venta</button>
+      </section>
+    </sc-if>
+
+    <!-- VENTAS -->
+    <sc-if value="{{ isVentas }}">
+      <section>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:18px">
+          <h2 style="font-family:Newsreader,serif;font-weight:500;font-size:26px;margin:0;color:var(--text,#33271D)">Ventas</h2>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <sc-for list="{{ ventasFilters }}" as="f" hint-placeholder-count="3">
+              <button onClick="{{ f.onClick }}" style="{{ f.style }}">{{ f.label }}</button>
+            </sc-for>
+          </div>
+        </div>
+        <sc-if value="{{ hasVentas }}">
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <sc-for list="{{ ventasDisplay }}" as="v" hint-placeholder-count="3">
+              <div style="display:flex;align-items:flex-start;gap:16px;padding:16px 18px;border:1px solid var(--border,#E0D3BF);border-radius:16px;background:var(--surface,#FBF6EE)">
+                <div style="flex:1;min-width:0">
+                  <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap">
+                    <span style="font-size:16px;color:var(--text,#33271D);font-weight:500">{{ v.clienteNombre }}</span>
+                    <span style="font-size:13px;color:var(--muted,#8A7A67)">{{ v.fecha }}</span>
+                  </div>
+                  <div style="margin-top:6px;display:flex;flex-direction:column;gap:3px">
+                    <sc-for list="{{ v.items }}" as="li" hint-placeholder-count="1">
+                      <div style="font-size:13.5px;color:var(--muted,#8A7A67)">{{ li.texto }}</div>
+                    </sc-for>
+                  </div>
+                  <div style="display:flex;gap:8px;margin-top:10px">
+                    <button onClick="{{ v.onToggleEntrega }}" style="{{ v.entregaStyle }}">{{ v.entregaLabel }}</button>
+                    <button onClick="{{ v.onTogglePago }}" style="{{ v.pagoStyle }}">{{ v.pagoLabel }}</button>
+                  </div>
+                </div>
+                <div style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:8px">
+                  <span style="font-family:Newsreader,serif;font-size:22px;color:var(--text,#33271D)">{{ v.totalLabel }}</span>
+                  <button onClick="{{ v.onDelete }}" style="border:none;background:transparent;color:var(--muted,#8A7A67);font-size:12.5px;cursor:pointer;padding:0" style-hover="color:var(--accent,#B5541F)">Eliminar</button>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+        <sc-if value="{{ noVentas }}">
+          <div style="text-align:center;padding:60px 20px;color:var(--muted,#8A7A67);border:1px dashed var(--border,#E0D3BF);border-radius:18px">
+            <div style="font-family:Newsreader,serif;font-size:19px;color:var(--text,#33271D);margin-bottom:6px">Aún no hay ventas</div>
+            <div style="font-size:14px">Registra tu primera venta en la pestaña <em>Nueva venta</em>.</div>
+          </div>
+        </sc-if>
+      </section>
+    </sc-if>
+
+    <!-- CLIENTES -->
+    <sc-if value="{{ isClientes }}">
+      <section>
+        <h2 style="font-family:Newsreader,serif;font-weight:500;font-size:26px;margin:0 0 18px;color:var(--text,#33271D)">Clientes</h2>
+        <div style="display:grid;grid-template-columns:1fr;gap:20px">
+          <div style="background:var(--surface,#FBF6EE);border:1px solid var(--border,#E0D3BF);border-radius:18px;padding:20px">
+            <div style="font-size:12px;letter-spacing:0.13em;text-transform:uppercase;color:var(--muted,#8A7A67);font-weight:600;margin-bottom:14px">{{ cliFormTitle }}</div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap">
+              <input value="{{ cliNombre }}" onChange="{{ onCliNombre }}" placeholder="Nombre" style="flex:2;min-width:160px;padding:12px 14px;border:1px solid var(--border,#E0D3BF);border-radius:11px;background:var(--surface2,#F3EADD);font-size:15px;color:var(--text,#33271D);outline:none">
+              <input value="{{ cliTelefono }}" onChange="{{ onCliTelefono }}" placeholder="Teléfono / nota" style="flex:2;min-width:160px;padding:12px 14px;border:1px solid var(--border,#E0D3BF);border-radius:11px;background:var(--surface2,#F3EADD);font-size:15px;color:var(--text,#33271D);outline:none">
+              <button onClick="{{ saveCliente }}" style="{{ cliSaveStyle }}" style-hover="filter:brightness(1.06)">{{ cliSaveLabel }}</button>
+              <sc-if value="{{ cliEditing }}">
+                <button onClick="{{ cancelCliente }}" style="padding:12px 16px;border:1px solid var(--border,#E0D3BF);border-radius:11px;background:transparent;color:var(--muted,#8A7A67);font-size:15px;cursor:pointer">Cancelar</button>
+              </sc-if>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:9px">
+            <sc-for list="{{ clientesDisplay }}" as="c" hint-placeholder-count="4">
+              <div style="display:flex;align-items:center;gap:14px;padding:14px 18px;border:1px solid var(--border,#E0D3BF);border-radius:14px;background:var(--surface,#FBF6EE)">
+                <div style="flex:1;min-width:0">
+                  <div style="font-size:15.5px;color:var(--text,#33271D);font-weight:500">{{ c.nombre }}</div>
+                  <div style="font-size:13px;color:var(--muted,#8A7A67);margin-top:2px">{{ c.telefono }}</div>
+                </div>
+                <button onClick="{{ c.onEdit }}" style="border:none;background:transparent;color:var(--accent,#B5541F);font-size:13.5px;cursor:pointer;padding:4px 6px" style-hover="opacity:0.7">Editar</button>
+                <button onClick="{{ c.onDelete }}" style="border:none;background:transparent;color:var(--muted,#8A7A67);font-size:13.5px;cursor:pointer;padding:4px 6px" style-hover="color:var(--accent,#B5541F)">Eliminar</button>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </section>
+    </sc-if>
+
+    <!-- CAFÉS -->
+    <sc-if value="{{ isCafes }}">
+      <section>
+        <h2 style="font-family:Newsreader,serif;font-weight:500;font-size:26px;margin:0 0 18px;color:var(--text,#33271D)">Cafés</h2>
+        <div style="display:flex;flex-direction:column;gap:20px">
+          <div style="background:var(--surface,#FBF6EE);border:1px solid var(--border,#E0D3BF);border-radius:18px;padding:20px">
+            <div style="font-size:12px;letter-spacing:0.13em;text-transform:uppercase;color:var(--muted,#8A7A67);font-weight:600;margin-bottom:14px">{{ cafFormTitle }}</div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+              <input value="{{ cafOrigen }}" onChange="{{ onCafOrigen }}" placeholder="Origen" style="flex:1.4;min-width:140px;padding:12px 14px;border:1px solid var(--border,#E0D3BF);border-radius:11px;background:var(--surface2,#F3EADD);font-size:15px;color:var(--text,#33271D);outline:none">
+              <input value="{{ cafPerfil }}" onChange="{{ onCafPerfil }}" placeholder="Perfil de taza" style="flex:2;min-width:160px;padding:12px 14px;border:1px solid var(--border,#E0D3BF);border-radius:11px;background:var(--surface2,#F3EADD);font-size:15px;color:var(--text,#33271D);outline:none">
+              <div style="display:flex;align-items:center;gap:6px;border:1px solid var(--border,#E0D3BF);border-radius:11px;padding:0 12px 0 12px;background:var(--surface2,#F3EADD)">
+                <span style="font-size:15px;color:var(--muted,#8A7A67)">$</span>
+                <input type="number" value="{{ cafPrecio }}" onChange="{{ onCafPrecio }}" placeholder="0" style="width:78px;padding:12px 6px;border:none;background:transparent;font-size:15px;color:var(--text,#33271D);text-align:right;outline:none">
+                <span style="font-size:12.5px;color:var(--muted,#8A7A67);white-space:nowrap">/250g</span>
+              </div>
+              <button onClick="{{ saveCafe }}" style="{{ cafSaveStyle }}" style-hover="filter:brightness(1.06)">{{ cafSaveLabel }}</button>
+              <sc-if value="{{ cafEditing }}">
+                <button onClick="{{ cancelCafe }}" style="padding:12px 16px;border:1px solid var(--border,#E0D3BF);border-radius:11px;background:transparent;color:var(--muted,#8A7A67);font-size:15px;cursor:pointer">Cancelar</button>
+              </sc-if>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:9px">
+            <sc-for list="{{ cafesDisplay }}" as="c" hint-placeholder-count="8">
+              <div style="display:flex;align-items:center;gap:14px;padding:14px 18px;border:1px solid var(--border,#E0D3BF);border-radius:14px;background:var(--surface,#FBF6EE)">
+                <div style="flex:1;min-width:0">
+                  <div style="font-size:15.5px;color:var(--text,#33271D);font-weight:500">{{ c.origen }}</div>
+                  <div style="font-size:13px;color:var(--muted,#8A7A67);margin-top:2px">{{ c.perfil }}</div>
+                </div>
+                <span style="font-size:15px;color:var(--accent,#B5541F);font-weight:600;white-space:nowrap">{{ c.precioLabel }}</span>
+                <button onClick="{{ c.onEdit }}" style="border:none;background:transparent;color:var(--accent,#B5541F);font-size:13.5px;cursor:pointer;padding:4px 6px" style-hover="opacity:0.7">Editar</button>
+                <button onClick="{{ c.onDelete }}" style="border:none;background:transparent;color:var(--muted,#8A7A67);font-size:13.5px;cursor:pointer;padding:4px 6px" style-hover="color:var(--accent,#B5541F)">Eliminar</button>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </section>
+    </sc-if>
+
+    <!-- RESUMEN -->
+    <sc-if value="{{ isResumen }}">
+      <section>
+        <h2 style="font-family:Newsreader,serif;font-weight:500;font-size:26px;margin:0 0 18px;color:var(--text,#33271D)">Resumen</h2>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:26px">
+          <sc-for list="{{ stats }}" as="s" hint-placeholder-count="4">
+            <div style="background:var(--surface,#FBF6EE);border:1px solid var(--border,#E0D3BF);border-radius:16px;padding:20px">
+              <div style="font-family:Newsreader,serif;font-size:32px;color:{{ s.color }};line-height:1">{{ s.value }}</div>
+              <div style="font-size:12.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted,#8A7A67);margin-top:8px;font-weight:600">{{ s.label }}</div>
+            </div>
+          </sc-for>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px">
+          <div style="background:var(--surface,#FBF6EE);border:1px solid var(--border,#E0D3BF);border-radius:18px;padding:22px">
+            <div style="font-size:12px;letter-spacing:0.13em;text-transform:uppercase;color:var(--accent,#B5541F);font-weight:600;margin-bottom:14px">Entregas pendientes</div>
+            <sc-for list="{{ pendEntregaList }}" as="p" hint-placeholder-count="2">
+              <div style="display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid var(--border,#E0D3BF)">
+                <span style="font-size:14.5px;color:var(--text,#33271D)">{{ p.nombre }}</span>
+                <span style="font-size:13.5px;color:var(--muted,#8A7A67)">{{ p.detalle }}</span>
+              </div>
+            </sc-for>
+            <sc-if value="{{ noPendEntrega }}"><div style="font-size:14px;color:var(--muted,#8A7A67);padding:6px 0">Todo entregado ✓</div></sc-if>
+          </div>
+          <div style="background:var(--surface,#FBF6EE);border:1px solid var(--border,#E0D3BF);border-radius:18px;padding:22px">
+            <div style="font-size:12px;letter-spacing:0.13em;text-transform:uppercase;color:var(--accent,#B5541F);font-weight:600;margin-bottom:14px">Pagos pendientes</div>
+            <sc-for list="{{ pendPagoList }}" as="p" hint-placeholder-count="2">
+              <div style="display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid var(--border,#E0D3BF)">
+                <span style="font-size:14.5px;color:var(--text,#33271D)">{{ p.nombre }}</span>
+                <span style="font-size:13.5px;color:var(--accent,#B5541F);font-weight:600">{{ p.detalle }}</span>
+              </div>
+            </sc-for>
+            <sc-if value="{{ noPendPago }}"><div style="font-size:14px;color:var(--muted,#8A7A67);padding:6px 0">Todo cobrado ✓</div></sc-if>
+          </div>
+        </div>
+      </section>
+    </sc-if>
+
+  </div>
+
+  <sc-if value="{{ anyDropdownOpen }}">
+    <div onClick="{{ closeDropdown }}" style="position:fixed;inset:0;z-index:30"></div>
+  </sc-if>
+
+  <sc-if value="{{ toast }}">
+    <div style="position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:var(--text,#33271D);color:var(--surface,#FBF6EE);padding:13px 24px;border-radius:999px;font-size:14.5px;z-index:60;animation:toastUp .3s ease;box-shadow:0 10px 30px rgba(0,0,0,0.2)">{{ toast }}</div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;100%&quot;,&quot;height&quot;:760}}">
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.KEY = 'cafe_grulla_v1';
+    this.MOLIENDAS = ['Grano entero', 'Espresso', 'Filtro/V60', 'Prensa francesa', 'Moka'];
+    this.THEMES = {
+      tostado: { '--bg':'#EFE7D9','--surface':'#FBF6EE','--surface2':'#F3EADD','--border':'#E1D4C0','--text':'#33271D','--muted':'#8A7A67','--accent':'#B5541F','--accent-soft':'#EBD9C6','--ok':'#5B7A4B' },
+      miel:    { '--bg':'#F1E9D4','--surface':'#FCF8EE','--surface2':'#F4EAD3','--border':'#E7D9BB','--text':'#3A2E1C','--muted':'#927E5C','--accent':'#B8862A','--accent-soft':'#EFE1C0','--ok':'#6C7A3D' },
+      cacao:   { '--bg':'#271F19','--surface':'#332820','--surface2':'#3D3026','--border':'#4A3B2D','--text':'#F1E7D9','--muted':'#B0A08B','--accent':'#D98A4E','--accent-soft':'#48372866','--ok':'#A9BE7F' }
+    };
+    const seed = this.seed();
+    this.state = {
+      showSplash: true,
+      tab: 'nueva',
+      theme: 'tostado',
+      clientes: seed.clientes,
+      cafes: seed.cafes,
+      ventas: [],
+      fClienteId: null,
+      fItems: [this.newItem()],
+      fEntregado: false,
+      fPagado: false,
+      openDropdown: null,
+      clienteSearch: '',
+      ventasFilter: 'todos',
+      cliForm: { nombre: '', telefono: '' },
+      editCli: null,
+      cafForm: { origen: '', perfil: '', precio: '' },
+      editCaf: null,
+      toast: ''
+    };
+    this._toastT = null;
+  }
+
+  newItem() { return { cafeId: null, cantidad: 250, molienda: 'Grano entero', precio: '' }; }
+
+  seed() {
+    const uid = () => Math.random().toString(36).slice(2, 9);
+    return {
+      clientes: [
+        { id: uid(), nombre: 'María López', telefono: '+54 9 11 5555 1020' },
+        { id: uid(), nombre: 'Carlos Ruiz', telefono: '+54 9 11 4444 8890' },
+        { id: uid(), nombre: 'Cafetería El Molino', telefono: 'Pedido semanal' },
+        { id: uid(), nombre: 'Lucía Fernández', telefono: '+54 9 11 3322 7788' }
+      ],
+      cafes: [
+        { id: uid(), origen: 'Colombia',    perfil: 'Chocolate, caramelo',  precio: 4800 },
+        { id: uid(), origen: 'Bolivia',     perfil: 'Frutos rojos, dulce',  precio: 5200 },
+        { id: uid(), origen: 'Etiopía',     perfil: 'Floral, cítrico',      precio: 5800 },
+        { id: uid(), origen: 'Guatemala',   perfil: 'Nuez, cacao',          precio: 5000 },
+        { id: uid(), origen: 'Costa Rica',  perfil: 'Miel, cítrico',        precio: 5400 },
+        { id: uid(), origen: 'Honduras',    perfil: 'Panela, almendra',     precio: 4600 },
+        { id: uid(), origen: 'Perú',        perfil: 'Caramelo suave',       precio: 4700 },
+        { id: uid(), origen: 'Ruanda',      perfil: 'Té negro, naranja',    precio: 6000 }
+      ]
+    };
+  }
+
+  normalizeVenta(v) {
+    if (v.items) return v;
+    const precio = v.cantidad ? Math.round(v.total / (v.cantidad / 250)) : v.total;
+    return { id: v.id, fecha: v.fecha, clienteId: v.clienteId, entregado: v.entregado, pagado: v.pagado,
+      total: v.total, items: [{ cafeId: v.cafeId, cantidad: v.cantidad, molienda: v.molienda, precio, subtotal: v.total }] };
+  }
+
+  componentDidMount() {
+    setTimeout(() => this.setState({ showSplash: false }), 2200);
+    try {
+      const raw = localStorage.getItem(this.KEY);
+      if (raw) {
+        const d = JSON.parse(raw);
+        this.setState({
+          clientes: d.clientes || this.state.clientes,
+          cafes: d.cafes || this.state.cafes,
+          ventas: (d.ventas || []).map(v => this.normalizeVenta(v)),
+          theme: d.theme || 'tostado'
+        });
+      }
+    } catch (e) {}
+  }
+
+  persist(patch) {
+    const s = Object.assign({}, this.state, patch);
+    try {
+      localStorage.setItem(this.KEY, JSON.stringify({
+        clientes: s.clientes, cafes: s.cafes, ventas: s.ventas, theme: s.theme
+      }));
+    } catch (e) {}
+  }
+
+  uid() { return Math.random().toString(36).slice(2, 9); }
+  money(n) { return '$' + Number(n || 0).toLocaleString('es-AR'); }
+
+  showToast(msg) {
+    this.setState({ toast: msg });
+    if (this._toastT) clearTimeout(this._toastT);
+    this._toastT = setTimeout(() => this.setState({ toast: '' }), 2200);
+  }
+
+  cantidadLabel(g) { return g >= 1000 && g % 1000 === 0 ? (g / 1000) + ' kg' : g + ' g'; }
+  fmtDate(iso) { return new Date(iso).toLocaleDateString('es', { day: '2-digit', month: 'short' }); }
+
+  pill(active) {
+    return { padding:'11px 17px', borderRadius:'999px', border:'1px solid var(--border)',
+      background: active ? 'var(--accent)' : 'var(--surface)', color: active ? '#fff' : 'var(--text)',
+      fontSize:'15px', fontWeight: active ? 600 : 500, cursor:'pointer' };
+  }
+  seg(active, tone) {
+    const bg = tone === 'ok' ? 'var(--ok)' : 'var(--accent)';
+    return { flex:1, padding:'12px', borderRadius:'12px', border:'1px solid var(--border)',
+      background: active ? bg : 'var(--surface2)', color: active ? '#fff' : 'var(--muted)',
+      fontSize:'15px', fontWeight:600, cursor:'pointer' };
+  }
+  moliOpt(active) {
+    return { display:'block', width:'100%', textAlign:'left', padding:'12px 16px', border:'none',
+      background: active ? 'var(--accent-soft)' : 'transparent', color:'var(--text)',
+      fontSize:'15px', cursor:'pointer' };
+  }
+  badge(done) {
+    return { fontSize:'12.5px', fontWeight:600, padding:'5px 12px', borderRadius:'999px',
+      border:'1px solid var(--border)', cursor:'pointer',
+      background: done ? 'var(--ok)' : 'transparent', color: done ? '#fff' : 'var(--accent)' };
+  }
+  chip(active) {
+    return { padding:'8px 14px', borderRadius:'999px', border:'1px solid var(--border)',
+      background: active ? 'var(--accent)' : 'transparent', color: active ? '#fff' : 'var(--muted)',
+      fontSize:'13.5px', fontWeight:600, cursor:'pointer' };
+  }
+  navStyle(active) {
+    return { padding:'9px 17px', borderRadius:'999px', border:'1px solid ' + (active ? 'transparent' : 'var(--border)'),
+      background: active ? 'var(--accent)' : 'transparent', color: active ? '#fff' : 'var(--muted)',
+      fontSize:'14.5px', fontWeight:600, cursor:'pointer' };
+  }
+  primaryBtn(disabled) {
+    return { width:'100%', padding:'16px', borderRadius:'14px', border:'none',
+      background: disabled ? 'var(--border)' : 'var(--accent)', color: disabled ? 'var(--muted)' : '#fff',
+      fontSize:'16px', fontWeight:600, cursor: disabled ? 'default' : 'pointer' };
+  }
+  smallBtn() {
+    return { padding:'12px 18px', borderRadius:'11px', border:'none', background:'var(--accent)',
+      color:'#fff', fontSize:'15px', fontWeight:600, cursor:'pointer' };
+  }
+
+  // items
+  updateItem(i, patch) {
+    const fItems = this.state.fItems.map((it, idx) => idx === i ? Object.assign({}, it, patch) : it);
+    this.setState({ fItems });
+  }
+  selectItemCafe(i, cafeId) {
+    const cafe = this.state.cafes.find(c => c.id === cafeId);
+    this.updateItem(i, { cafeId, precio: cafe ? String(cafe.precio) : '' });
+    this.setState({ openDropdown: null });
+  }
+  incCount() { this.setState({ fItems: [...this.state.fItems, this.newItem()] }); }
+  decCount() {
+    if (this.state.fItems.length > 1) this.setState({ fItems: this.state.fItems.slice(0, -1) });
+  }
+  removeItem(i) {
+    if (this.state.fItems.length > 1) this.setState({ fItems: this.state.fItems.filter((_, idx) => idx !== i) });
+  }
+
+  saveSale() {
+    const cliSel = this.state.clientes.find(c => c.id === this.state.fClienteId);
+    const valid = this.state.fItems.filter(it => it.cafeId);
+    if (!cliSel || valid.length === 0) return;
+    const items = valid.map(it => {
+      const precio = parseFloat(it.precio) || 0;
+      const cant = Number(it.cantidad) || 0;
+      return { cafeId: it.cafeId, cantidad: cant, molienda: it.molienda, precio, subtotal: Math.round(precio * (cant / 250)) };
+    });
+    const total = items.reduce((s, x) => s + x.subtotal, 0);
+    const venta = { id: this.uid(), fecha: new Date().toISOString(), clienteId: cliSel.id,
+      items, entregado: this.state.fEntregado, pagado: this.state.fPagado, total };
+    const ventas = [...this.state.ventas, venta];
+    this.setState({ ventas, fClienteId: null, fItems: [this.newItem()], fEntregado: false, fPagado: false });
+    this.persist({ ventas });
+    this.showToast('Venta registrada ✓');
+  }
+  deleteVenta(id) { const ventas = this.state.ventas.filter(v => v.id !== id); this.setState({ ventas }); this.persist({ ventas }); }
+  toggleVentaEntrega(id) { const ventas = this.state.ventas.map(v => v.id === id ? Object.assign({}, v, { entregado: !v.entregado }) : v); this.setState({ ventas }); this.persist({ ventas }); }
+  toggleVentaPago(id) { const ventas = this.state.ventas.map(v => v.id === id ? Object.assign({}, v, { pagado: !v.pagado }) : v); this.setState({ ventas }); this.persist({ ventas }); }
+
+  saveCliente() {
+    const f = this.state.cliForm;
+    if (!f.nombre.trim()) return;
+    let clientes;
+    if (this.state.editCli) clientes = this.state.clientes.map(c => c.id === this.state.editCli ? Object.assign({}, c, { nombre: f.nombre.trim(), telefono: f.telefono.trim() }) : c);
+    else clientes = [...this.state.clientes, { id: this.uid(), nombre: f.nombre.trim(), telefono: f.telefono.trim() }];
+    this.setState({ clientes, cliForm: { nombre: '', telefono: '' }, editCli: null });
+    this.persist({ clientes });
+  }
+  editCliente(c) { this.setState({ cliForm: { nombre: c.nombre, telefono: c.telefono || '' }, editCli: c.id }); }
+  cancelCliente() { this.setState({ cliForm: { nombre: '', telefono: '' }, editCli: null }); }
+  deleteCliente(id) { const clientes = this.state.clientes.filter(c => c.id !== id); this.setState({ clientes }); this.persist({ clientes }); }
+
+  saveCafe() {
+    const f = this.state.cafForm;
+    if (!f.origen.trim()) return;
+    const precio = parseFloat(f.precio) || 0;
+    let cafes;
+    if (this.state.editCaf) cafes = this.state.cafes.map(c => c.id === this.state.editCaf ? Object.assign({}, c, { origen: f.origen.trim(), perfil: f.perfil.trim(), precio }) : c);
+    else cafes = [...this.state.cafes, { id: this.uid(), origen: f.origen.trim(), perfil: f.perfil.trim(), precio }];
+    this.setState({ cafes, cafForm: { origen: '', perfil: '', precio: '' }, editCaf: null });
+    this.persist({ cafes });
+  }
+  editCafe(c) { this.setState({ cafForm: { origen: c.origen, perfil: c.perfil || '', precio: String(c.precio) }, editCaf: c.id }); }
+  cancelCafe() { this.setState({ cafForm: { origen: '', perfil: '', precio: '' }, editCaf: null }); }
+  deleteCafe(id) { const cafes = this.state.cafes.filter(c => c.id !== id); this.setState({ cafes }); this.persist({ cafes }); }
+
+  setTheme(t) { this.setState({ theme: t }); this.persist({ theme: t }); }
+  setTab(t) { this.setState({ tab: t, openDropdown: null }); }
+  toggleDrop(name) { this.setState({ openDropdown: this.state.openDropdown === name ? null : name }); }
+
+  renderVals() {
+    const st = this.state;
+    const cliSel = st.clientes.find(c => c.id === st.fClienteId);
+    const q = st.clienteSearch.trim().toLowerCase();
+    const filtered = st.clientes.filter(c => c.nombre.toLowerCase().includes(q));
+
+    const themeSwatches = Object.keys(this.THEMES).map(k => {
+      const t = this.THEMES[k];
+      const active = st.theme === k;
+      return { key: k, label: k, onClick: () => this.setTheme(k),
+        style: { width:'26px', height:'26px', borderRadius:'50%', cursor:'pointer', background: t['--accent'],
+          border: active ? '2px solid var(--text)' : '2px solid var(--border)',
+          boxShadow: active ? '0 0 0 2px var(--bg)' : 'none', padding:0 } };
+    });
+
+    const tabs = [['nueva','Nueva venta'],['ventas','Ventas'],['clientes','Clientes'],['cafes','Cafés'],['resumen','Resumen']];
+    const navTabs = tabs.map(([k, label]) => ({ key: k, label, onClick: () => this.setTab(k), style: this.navStyle(st.tab === k) }));
+
+    // items
+    let orderTotal = 0;
+    const items = st.fItems.map((it, i) => {
+      const cafe = st.cafes.find(c => c.id === it.cafeId);
+      const cant = Number(it.cantidad) || 0;
+      const sub = cafe ? Math.round((parseFloat(it.precio) || 0) * (cant / 250)) : 0;
+      orderTotal += sub;
+      return {
+        title: 'Café ' + (i + 1),
+        canRemove: st.fItems.length > 1,
+        onRemove: () => this.removeItem(i),
+        toggleCafe: () => this.toggleDrop('cafe-' + i),
+        isCafeOpen: st.openDropdown === 'cafe-' + i,
+        cafeLabel: cafe ? cafe.origen : 'Seleccionar café',
+        cafeLabelStyle: { color: cafe ? 'var(--text)' : 'var(--muted)' },
+        cafeOptions: st.cafes.map(c => ({ origen: c.origen, perfil: c.perfil || '', precioLabel: this.money(c.precio), onSelect: () => this.selectItemCafe(i, c.id) })),
+        cantidad: it.cantidad,
+        cantidadQuick: [250, 500, 1000].map(v => ({ label: this.cantidadLabel(v), onClick: () => this.updateItem(i, { cantidad: v }), style: this.pill(cant === v) })),
+        onCantidad: e => this.updateItem(i, { cantidad: e.target.value === '' ? '' : Math.max(0, parseInt(e.target.value) || 0) }),
+        toggleMolienda: () => this.toggleDrop('molienda-' + i),
+        isMoliendaOpen: st.openDropdown === 'molienda-' + i,
+        molienda: it.molienda,
+        moliendaOptions: this.MOLIENDAS.map(m => ({ label: m, style: this.moliOpt(m === it.molienda), onSelect: () => { this.updateItem(i, { molienda: m }); this.setState({ openDropdown: null }); } })),
+        precio: it.precio,
+        onPrecio: e => this.updateItem(i, { precio: e.target.value }),
+        subtotalLabel: this.money(sub)
+      };
+    });
+
+    const entregaOptions = [
+      { label: 'Pendiente', onClick: () => this.setState({ fEntregado: false }), style: this.seg(!st.fEntregado, 'accent') },
+      { label: 'Entregado', onClick: () => this.setState({ fEntregado: true }), style: this.seg(st.fEntregado, 'ok') }
+    ];
+    const pagoOptions = [
+      { label: 'Pendiente', onClick: () => this.setState({ fPagado: false }), style: this.seg(!st.fPagado, 'accent') },
+      { label: 'Pagado', onClick: () => this.setState({ fPagado: true }), style: this.seg(st.fPagado, 'ok') }
+    ];
+
+    const canSave = !!cliSel && st.fItems.some(it => it.cafeId);
+
+    // ventas
+    const cliName = id => { const c = st.clientes.find(x => x.id === id); return c ? c.nombre : '—'; };
+    const cafOrig = id => { const c = st.cafes.find(x => x.id === id); return c ? c.origen : '—'; };
+    let vlist = st.ventas.slice().reverse();
+    if (st.ventasFilter === 'entrega') vlist = vlist.filter(v => !v.entregado);
+    if (st.ventasFilter === 'pago') vlist = vlist.filter(v => !v.pagado);
+    const ventasDisplay = vlist.map(v => ({
+      id: v.id, clienteNombre: cliName(v.clienteId), fecha: this.fmtDate(v.fecha), totalLabel: this.money(v.total),
+      items: v.items.map(it => ({ texto: cafOrig(it.cafeId) + ' · ' + this.cantidadLabel(it.cantidad) + ' · ' + it.molienda + ' — ' + this.money(it.subtotal) })),
+      entregaLabel: v.entregado ? 'Entregado' : 'Entrega pendiente', entregaStyle: this.badge(v.entregado),
+      pagoLabel: v.pagado ? 'Pagado' : 'Pago pendiente', pagoStyle: this.badge(v.pagado),
+      onDelete: () => this.deleteVenta(v.id), onToggleEntrega: () => this.toggleVentaEntrega(v.id), onTogglePago: () => this.toggleVentaPago(v.id)
+    }));
+    const ventasFilters = [['todos','Todas'],['entrega','Sin entregar'],['pago','Sin cobrar']].map(([k, label]) => ({ key: k, label, onClick: () => this.setState({ ventasFilter: k }), style: this.chip(st.ventasFilter === k) }));
+
+    const clientesDisplay = st.clientes.map(c => ({ id: c.id, nombre: c.nombre, telefono: c.telefono || '—', onEdit: () => this.editCliente(c), onDelete: () => this.deleteCliente(c.id) }));
+    const cafesDisplay = st.cafes.map(c => ({ id: c.id, origen: c.origen, perfil: c.perfil || '—', precioLabel: this.money(c.precio) + ' /250g', onEdit: () => this.editCafe(c), onDelete: () => this.deleteCafe(c.id) }));
+
+    const pe = st.ventas.filter(v => !v.entregado);
+    const pp = st.ventas.filter(v => !v.pagado);
+    const vendido = st.ventas.reduce((s, v) => s + v.total, 0);
+    const stats = [
+      { label: 'Ventas totales', value: String(st.ventas.length), color: 'var(--text)' },
+      { label: 'Por entregar', value: String(pe.length), color: 'var(--accent)' },
+      { label: 'Por cobrar', value: String(pp.length), color: 'var(--accent)' },
+      { label: 'Vendido', value: this.money(vendido), color: 'var(--ok)' }
+    ];
+    const resumenDetalle = v => { const n = v.items.length; const first = cafOrig(v.items[0].cafeId); return n > 1 ? first + ' +' + (n - 1) : first; };
+    const pendEntregaList = pe.slice().reverse().map(v => ({ nombre: cliName(v.clienteId), detalle: resumenDetalle(v) }));
+    const pendPagoList = pp.slice().reverse().map(v => ({ nombre: cliName(v.clienteId), detalle: this.money(v.total) }));
+
+    return {
+      rootStyle: Object.assign({}, this.THEMES[st.theme], { fontFamily: "'Work Sans', system-ui, sans-serif", minHeight: '100vh', background: 'var(--bg)', color: 'var(--text)' }),
+      showSplash: st.showSplash,
+      splashStyle: { position:'fixed', inset:0, zIndex:200, background:'var(--bg)', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center',
+        animation: 'splashOut .5s ease forwards', animationDelay: '1.7s' },
+      themeSwatches, navTabs,
+      isNueva: st.tab === 'nueva', isVentas: st.tab === 'ventas', isClientes: st.tab === 'clientes', isCafes: st.tab === 'cafes', isResumen: st.tab === 'resumen',
+
+      toggleCliente: () => this.toggleDrop('cliente'),
+      isClienteOpen: st.openDropdown === 'cliente',
+      clienteLabel: cliSel ? cliSel.nombre : 'Seleccionar cliente',
+      clienteLabelStyle: { color: cliSel ? 'var(--text)' : 'var(--muted)' },
+      clienteSearch: st.clienteSearch,
+      onClienteSearch: e => this.setState({ clienteSearch: e.target.value }),
+      filteredClientes: filtered.map(c => ({ nombre: c.nombre, telefono: c.telefono || '', onSelect: () => this.setState({ fClienteId: c.id, openDropdown: null, clienteSearch: '' }) })),
+      noClientes: filtered.length === 0,
+
+      itemCount: st.fItems.length,
+      incCount: () => this.incCount(), decCount: () => this.decCount(),
+      items,
+
+      entregaOptions, pagoOptions,
+      totalLabel: this.money(orderTotal),
+      saveDisabled: !canSave, saveBtnStyle: this.primaryBtn(!canSave), saveSale: () => this.saveSale(),
+
+      anyDropdownOpen: st.openDropdown !== null,
+      closeDropdown: () => this.setState({ openDropdown: null }),
+      toast: st.toast,
+
+      ventasDisplay, ventasFilters, hasVentas: ventasDisplay.length > 0, noVentas: ventasDisplay.length === 0,
+
+      clientesDisplay,
+      cliNombre: st.cliForm.nombre, cliTelefono: st.cliForm.telefono,
+      onCliNombre: e => this.setState({ cliForm: Object.assign({}, st.cliForm, { nombre: e.target.value }) }),
+      onCliTelefono: e => this.setState({ cliForm: Object.assign({}, st.cliForm, { telefono: e.target.value }) }),
+      saveCliente: () => this.saveCliente(), cancelCliente: () => this.cancelCliente(),
+      cliEditing: !!st.editCli, cliFormTitle: st.editCli ? 'Editar cliente' : 'Añadir cliente',
+      cliSaveLabel: st.editCli ? 'Guardar' : 'Añadir', cliSaveStyle: this.smallBtn(),
+
+      cafesDisplay,
+      cafOrigen: st.cafForm.origen, cafPerfil: st.cafForm.perfil, cafPrecio: st.cafForm.precio,
+      onCafOrigen: e => this.setState({ cafForm: Object.assign({}, st.cafForm, { origen: e.target.value }) }),
+      onCafPerfil: e => this.setState({ cafForm: Object.assign({}, st.cafForm, { perfil: e.target.value }) }),
+      onCafPrecio: e => this.setState({ cafForm: Object.assign({}, st.cafForm, { precio: e.target.value }) }),
+      saveCafe: () => this.saveCafe(), cancelCafe: () => this.cancelCafe(),
+      cafEditing: !!st.editCaf, cafFormTitle: st.editCaf ? 'Editar café' : 'Añadir café',
+      cafSaveLabel: st.editCaf ? 'Guardar' : 'Añadir', cafSaveStyle: this.smallBtn(),
+
+      stats, pendEntregaList, pendPagoList,
+      noPendEntrega: pendEntregaList.length === 0, noPendPago: pendPagoList.length === 0
+    };
+  }
+}
+</script>
+</body>
+</html>
